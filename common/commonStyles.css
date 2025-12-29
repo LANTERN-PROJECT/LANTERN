@@ -1,0 +1,635 @@
+/* =========================================================
+   LANTERN – Core Design System
+   Default Theme: Walnut Noir
+   ========================================================= */
+
+/* -----------------------------
+   Theme Variables (Default)
+   ----------------------------- */
+
+:root {
+  /* Walnut Noir Palette */
+  --bg-main: #2E1F1B;
+  --bg-accent: #5E4B43;
+  --bg-glass: rgba(255, 255, 255, 0.06);
+  --bg-elevated: rgba(94, 75, 67, 0.28);
+
+  --border-glass: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #F3ECE9;
+  --text-secondary: #C9B8AE;
+  --text-muted: #9B8578;
+
+  --accent: #E6D3C4;
+
+  /* Effects */
+  --blur-strong: blur(20px);
+  --blur-soft: blur(12px);
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+}
+
+/* -----------------------------
+   Reset & Base
+   ----------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background:
+    radial-gradient(circle at center,
+      var(--bg-accent) 0%,
+      var(--bg-main) 65%);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* -----------------------------
+   Navigation
+   ----------------------------- */
+
+nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 80px);
+  max-width: 1200px;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur-strong);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+
+  z-index: 10;
+}
+
+nav .logo {
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-size: 14px;
+}
+
+nav .links {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+nav .links span {
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+nav .links span:hover {
+  color: var(--text-primary);
+}
+
+nav .login {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+}
+
+nav .workspace-button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+nav .workspace-button:hover {
+  background: var(--bg-glass);
+}
+
+.workspace-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur-strong);
+  border: 1px solid var(--border-glass);
+  display: none;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.workspace-dropdown.visible {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.workspace-dropdown .workspace-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background var(--transition-fast);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.workspace-dropdown .workspace-item:hover {
+  background: var(--bg-elevated);
+}
+
+.workspace-dropdown .workspace-item.active {
+  background: var(--bg-elevated);
+  color: var(--accent);
+}
+
+.workspace-dropdown .divider {
+  height: 1px;
+  background: var(--border-glass);
+  margin: 8px 0;
+}
+
+.workspace-dropdown .workspace-action {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background var(--transition-fast);
+  color: var(--accent);
+}
+
+.workspace-dropdown .workspace-action:hover {
+  background: var(--bg-elevated);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------
+   Hero Layout
+   ----------------------------- */
+
+.hero {
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+
+  padding: 140px 80px 80px;
+  align-items: center;
+}
+
+.hero-left h1 {
+  font-size: clamp(40px, 4vw, 64px);
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero-left p {
+  max-width: 520px;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* -----------------------------
+   Orb (Visual Focus Element)
+   ----------------------------- */
+
+.orb-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.orb {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%,
+      #ffffff,
+      #e6d3c4 40%,
+      #5e4b43 65%,
+      transparent 70%);
+  opacity: 0.85;
+  filter: blur(5px);
+}
+
+/* -----------------------------
+   Right Column – Stats
+   ----------------------------- */
+
+.hero-right {
+  display: grid;
+  gap: 16px;
+}
+
+.stat {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur-soft);
+  border: 1px solid var(--border-glass);
+}
+
+.stat strong {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.stat span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* -----------------------------
+   Buttons
+   ----------------------------- */
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    border var(--transition-fast);
+}
+
+.btn:hover {
+  background: rgba(94, 75, 67, 0.4);
+}
+
+/* -----------------------------
+   Settings Panel
+   ----------------------------- */
+
+.settings-panel {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  width: 280px;
+
+  padding: 20px;
+  border-radius: var(--radius-lg);
+
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur-strong);
+  border: 1px solid var(--border-glass);
+
+  display: none;
+  z-index: 20;
+}
+
+.settings-panel h2 {
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+.setting-group label {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.setting-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.setting-group select:hover {
+  border-color: var(--accent);
+}
+
+.setting-group select:focus {
+  border-color: var(--accent);
+}
+
+/* -----------------------------
+   Universal Form Elements
+   ----------------------------- */
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+textarea {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="number"]::placeholder,
+input[type="search"]::placeholder,
+input[type="url"]::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="url"]:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+input[type="number"]:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Select Dropdowns */
+select {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 8px 32px 8px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  appearance: none;
+  /* Arrow color chosen to be visible on both light and dark themes */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23777' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+select:hover {
+  border-color: var(--accent);
+}
+
+select:focus {
+  border-color: var(--accent);
+}
+
+select option {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Checkboxes - Custom Styled */
+input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-glass);
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--accent);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--bg-main);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Radio Buttons */
+input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-glass);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+input[type="radio"]:hover {
+  border-color: var(--accent);
+}
+
+input[type="radio"]:checked {
+  border-color: var(--accent);
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* File Upload */
+input[type="file"] {
+  color: var(--text-primary);
+}
+
+input[type="file"]::file-selector-button {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all var(--transition-fast);
+}
+
+input[type="file"]::file-selector-button:hover {
+  border-color: var(--accent);
+  background: var(--bg-glass);
+}
+
+/* Range Sliders */
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg-main);
+  transition: all var(--transition-fast);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg-main);
+  transition: all var(--transition-fast);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Textarea */
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+/* -----------------------------
+   Responsive
+   ----------------------------- */
+
+@media (max-width: 900px) {
+  nav {
+    width: calc(100% - 40px);
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 120px 24px 40px;
+  }
+
+  .hero-right {
+    margin-top: 40px;
+  }
+}

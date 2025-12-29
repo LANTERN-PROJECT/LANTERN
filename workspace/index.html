@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workspace - LANTERN</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../common/commonStyles.css" />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../Assets/Favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../Assets/Favicon/favicon-16x16.png">
+    <link rel="manifest" href="../Assets/Favicon/site.webmanifest">
+    <style>
+        /* Login Page Specific Styles */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 440px;
+            padding: 48px 40px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur-strong);
+            border: 1px solid var(--border-glass);
+            position: relative;
+            z-index: 5;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            margin-bottom: 8px;
+        }
+
+        .auth-logo p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            padding: 4px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .auth-tab.active {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            font-size: 14px;
+            outline: none;
+            transition: border var(--transition-fast);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group input.error {
+            border-color: #ff6b6b;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: #ff6b6b;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .form-link {
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity var(--transition-fast);
+        }
+
+        .form-link:hover {
+            opacity: 0.8;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            color: var(--bg-main);
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: 16px;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-glass);
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .social-btn:hover {
+            background: var(--bg-glass);
+            border-color: var(--accent);
+        }
+
+        .social-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .auth-footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .auth-footer a:hover {
+            color: var(--accent);
+        }
+
+        .success-message {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: rgba(76, 175, 80, 0.15);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #81c784;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--bg-elevated);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-fill.weak {
+            width: 33%;
+            background: #ff6b6b;
+        }
+
+        .strength-fill.medium {
+            width: 66%;
+            background: #ffa726;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: #66bb6a;
+        }
+
+        .strength-text {
+            margin-top: 4px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .auth-box {
+                padding: 32px 24px;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Orb -->
+    <div class="orb-container">
+        <div class="orb"></div>
+    </div>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-box">
+
+            <!-- Logo -->
+            <div class="auth-logo">
+                <h1>LANTERN</h1>
+                <p>Local workspace manager</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Unlock Workspace</button>
+                <button class="auth-tab" data-tab="signup">Create Workspace</button>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="success-message"></div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Workspace ID</label>
+                    <input type="text" id="login-email" placeholder="my-workspace" required autocomplete="username" />
+                    <span class="form-error" id="login-email-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Encryption Passphrase</label>
+                    <input type="password" id="login-password" placeholder="Enter your passphrase" required
+                        autocomplete="current-password" />
+                    <span class="form-error" id="login-password-error"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="remember-me" />
+                        <span>Keep unlocked on this device</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn">Unlock Workspace</button>
+
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn" id="github-login">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                        GitHub
+                    </button>
+                    <button type="button" class="social-btn" id="google-login">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Google
+                    </button>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Workspace Name</label>
+                    <input type="text" id="signup-name" placeholder="My Project" required />
+                    <span class="form-error" id="signup-name-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Workspace ID</label>
+                    <input type="text" id="signup-email" placeholder="my-workspace" required autocomplete="username" />
+                    <span class="form-error" id="signup-email-error"></span>
+                    <span class="setting-hint"
+                        style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;">Used to
+                        identify this workspace locally</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Encryption Passphrase</label>
+                    <input type="password" id="signup-password" placeholder="Create a strong passphrase" required
+                        autocomplete="new-password" />
+                    <span class="form-error" id="signup-password-error"></span>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="password-strength" id="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strength-fill"></div>
+                        </div>
+                        <div class="strength-text" id="strength-text"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password-confirm">Confirm Passphrase</label>
+                    <input type="password" id="signup-password-confirm" placeholder="Re-enter your passphrase" required
+                        autocomplete="new-password" />
+                    <span class="form-error" id="signup-password-confirm-error"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="agree-terms" required />
+                        <span style="font-size: 13px; color: var(--text-muted);">⚠️ I understand this workspace is
+                            stored locally only. No recovery if passphrase is lost.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Workspace</button>
+            </form>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                <a href="../index.html">← Back to Home</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        /* =========================================================
+           Theme System (Load saved theme)
+           ========================================================= */
+
+        const themes = {
+            walnut: {
+                "--bg-main": "#2E1F1B",
+                "--bg-accent": "#5E4B43",
+                "--bg-glass": "rgba(255,255,255,0.06)",
+                "--bg-elevated": "rgba(94,75,67,0.28)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#F3ECE9",
+                "--text-secondary": "#C9B8AE",
+                "--text-muted": "#9B8578",
+                "--accent": "#E6D3C4"
+            },
+
+            ash: {
+                "--bg-main": "#1C1E21",
+                "--bg-accent": "#2A2D31",
+                "--bg-glass": "rgba(255,255,255,0.05)",
+                "--bg-elevated": "rgba(255,255,255,0.08)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#E6E8EB",
+                "--text-secondary": "#B0B6BF",
+                "--text-muted": "#8A9099",
+                "--accent": "#FFFFFF"
+            },
+
+            paper: {
+                "--bg-main": "#F6F2EE",
+                "--bg-accent": "#FFFFFF",
+                "--bg-glass": "rgba(0,0,0,0.04)",
+                "--bg-elevated": "rgba(0,0,0,0.06)",
+                "--border-glass": "rgba(0,0,0,0.12)",
+                "--text-primary": "#2E1F1B",
+                "--text-secondary": "#5E4B43",
+                "--text-muted": "#7A6A61",
+                "--accent": "#2E1F1B"
+            }
+        };
+
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+
+            Object.entries(theme).forEach(([key, value]) => {
+                document.documentElement.style.setProperty(key, value);
+            });
+        }
+
+        // Load saved theme
+        const defaultTheme = "paper";
+        const savedTheme = localStorage.getItem("lantern-theme") || defaultTheme;
+        applyTheme(savedTheme);
+
+        /* =========================================================
+           Tab Switching
+           ========================================================= */
+
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                // Update active tab
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update active form
+                authForms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === `${tabName}-form`) {
+                        form.classList.add('active');
+                    }
+                });
+
+                // Clear any messages
+                hideSuccessMessage();
+                clearErrors();
+            });
+        });
+
+        /* =========================================================
+           Form Validation
+           ========================================================= */
+
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(`${inputId}-error`);
+
+            input.classList.add('error');
+            error.textContent = message;
+            error.classList.add('visible');
+        }
+
+        function clearError(inputId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(`${inputId}-error`);
+
+            input.classList.remove('error');
+            error.classList.remove('visible');
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('visible');
+            });
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        /* =========================================================
+           Password Strength Indicator
+           ========================================================= */
+
+        const signupPassword = document.getElementById('signup-password');
+        const strengthFill = document.getElementById('strength-fill');
+        const strengthText = document.getElementById('strength-text');
+
+        signupPassword.addEventListener('input', (e) => {
+            const password = e.target.value;
+            const strength = calculatePasswordStrength(password);
+
+            strengthFill.className = 'strength-fill';
+
+            if (password.length === 0) {
+                strengthFill.style.width = '0';
+                strengthText.textContent = '';
+            } else if (strength < 3) {
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'Weak password';
+            } else if (strength < 4) {
+                strengthFill.classList.add('medium');
+                strengthText.textContent = 'Medium strength';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'Strong password';
+            }
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            return strength;
+        }
+
+        /* =========================================================
+           Success Message
+           ========================================================= */
+
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('success-message');
+            successMsg.textContent = message;
+            successMsg.classList.add('visible');
+
+            setTimeout(() => {
+                hideSuccessMessage();
+            }, 5000);
+        }
+
+        function hideSuccessMessage() {
+            const successMsg = document.getElementById('success-message');
+            successMsg.classList.remove('visible');
+        }
+
+        /* =========================================================
+           Login Form Submission
+           ========================================================= */
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const workspaceId = document.getElementById('login-email').value.trim();
+            const passphrase = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            let isValid = true;
+
+            // Validate workspace ID
+            if (!workspaceId) {
+                showError('login-email', 'Workspace ID is required');
+                isValid = false;
+            }
+
+            // Validate passphrase
+            if (!passphrase) {
+                showError('login-password', 'Passphrase is required');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Check if workspace exists
+            const workspaces = JSON.parse(localStorage.getItem('lantern-workspaces') || '{}');
+            const workspace = workspaces[workspaceId];
+
+            if (!workspace) {
+                showError('login-email', 'No workspace found with this ID');
+                return;
+            }
+
+            if (workspace.keyHash !== passphrase) {
+                showError('login-password', 'Incorrect passphrase');
+                return;
+            }
+
+            // Unlock successful
+            localStorage.setItem('lantern-unlocked', 'true');
+            localStorage.setItem('lantern-current-workspace', JSON.stringify({
+                id: workspaceId,
+                displayName: workspace.displayName,
+                lastOpened: new Date().toISOString()
+            }));
+
+            if (rememberMe) {
+                localStorage.setItem('lantern-keep-unlocked', 'true');
+            }
+
+            // Update last opened time
+            workspace.lastOpened = new Date().toISOString();
+            workspaces[workspaceId] = workspace;
+            localStorage.setItem('lantern-workspaces', JSON.stringify(workspaces));
+
+            showSuccessMessage('Workspace unlocked! Redirecting...');
+
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1500);
+        });
+
+        /* =========================================================
+           Signup Form Submission
+           ========================================================= */
+
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const displayName = document.getElementById('signup-name').value.trim();
+            const workspaceId = document.getElementById('signup-email').value.trim();
+            const passphrase = document.getElementById('signup-password').value;
+            const confirmPassphrase = document.getElementById('signup-password-confirm').value;
+
+            let isValid = true;
+
+            // Validate workspace name
+            if (!displayName) {
+                showError('signup-name', 'Workspace name is required');
+                isValid = false;
+            }
+
+            // Validate workspace ID
+            if (!workspaceId) {
+                showError('signup-email', 'Workspace ID is required');
+                isValid = false;
+            } else if (workspaceId.length < 3) {
+                showError('signup-email', 'Workspace ID must be at least 3 characters');
+                isValid = false;
+            }
+
+            // Validate passphrase
+            if (!passphrase) {
+                showError('signup-password', 'Passphrase is required');
+                isValid = false;
+            } else if (!validatePassword(passphrase)) {
+                showError('signup-password', 'Passphrase must be at least 8 characters');
+                isValid = false;
+            }
+
+            // Validate passphrase confirmation
+            if (!confirmPassphrase) {
+                showError('signup-password-confirm', 'Please confirm your passphrase');
+                isValid = false;
+            } else if (passphrase !== confirmPassphrase) {
+                showError('signup-password-confirm', 'Passphrases do not match');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Check if workspace already exists
+            const workspaces = JSON.parse(localStorage.getItem('lantern-workspaces') || '{}');
+
+            if (workspaces[workspaceId]) {
+                showError('signup-email', 'A workspace with this ID already exists');
+                return;
+            }
+
+            // Create new workspace
+            workspaces[workspaceId] = {
+                id: workspaceId,
+                displayName: displayName,
+                keyHash: passphrase, // In production, this would be a proper hash
+                settings: {},
+                createdAt: new Date().toISOString(),
+                lastOpened: new Date().toISOString()
+            };
+
+            localStorage.setItem('lantern-workspaces', JSON.stringify(workspaces));
+
+            showSuccessMessage('Workspace created successfully! You can now unlock it.');
+
+            // Switch to unlock tab after 2 seconds
+            setTimeout(() => {
+                document.querySelector('[data-tab="login"]').click();
+                document.getElementById('login-email').value = workspaceId;
+            }, 2000);
+        });
+
+        /* =========================================================
+           Auto-fill Detection (if redirected from home)
+           ========================================================= */
+
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Check for workspace switching
+            const workspaceParam = urlParams.get('workspace');
+            if (workspaceParam) {
+                document.getElementById('login-email').value = workspaceParam;
+                document.getElementById('login-password').focus();
+            }
+
+            // Check for signup action
+            if (urlParams.get('action') === 'signup') {
+                document.querySelector('[data-tab="signup"]').click();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LANTERN – Workspace</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../../Common/commonStyles.css" />
+
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-y: auto;
+            padding: 40px 0;
+        }
+
+        /* Orb Background */
+        .orb-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            opacity: 0.15;
+            filter: blur(80px);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.15;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.25;
+            }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            margin: auto 0;
+            padding: 20px;
+        }
+
+        /* Auth Card */
+        .auth-card {
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur-strong);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            background: var(--bg-elevated);
+            padding: 6px;
+            border-radius: var(--radius-md);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .auth-tab.active {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .auth-tab:hover:not(.active) {
+            color: var(--text-secondary);
+        }
+
+        /* Forms */
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .form-example {
+            background: var(--bg-elevated);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            margin-top: 10px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .form-example-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-example-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .form-example code {
+            background: var(--bg-main);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 2px;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        /* Warning Alert */
+        .warning-alert {
+            background: rgba(255, 183, 77, 0.1);
+            border: 1px solid rgba(255, 183, 77, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-alert-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .warning-alert-content {
+            flex: 1;
+        }
+
+        .warning-alert-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #FFB74D;
+            margin-bottom: 4px;
+        }
+
+        .warning-alert-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-main);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-accent);
+        }
+
+        /* Workspace Selection View */
+        .workspace-selection {
+            display: none;
+        }
+
+        .workspace-selection.active {
+            display: block;
+        }
+
+        .workspace-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .workspace-header h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .workspace-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .workspace-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .workspace-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .workspace-item:hover {
+            background: var(--bg-accent);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .workspace-item-info h3 {
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .workspace-item-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .workspace-item-arrow {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border-glass);
+            margin: 20px 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .empty-state-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Link */
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-link button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 13px;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .auth-link button:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Orb Background -->
+    <div class="orb-container">
+        <div class="orb"></div>
+    </div>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+
+            <!-- Login/Sign Up Forms -->
+            <div id="auth-view">
+                <div class="auth-logo">LANTERN</div>
+                <div class="auth-subtitle">Local-first workspace system</div>
+
+                <!-- Warning Alert (shown when no workspace exists) -->
+                <div class="warning-alert" id="no-workspace-warning" style="display: none;">
+                    <div class="warning-alert-icon">⚠️</div>
+                    <div class="warning-alert-content">
+                        <div class="warning-alert-title">No Workspace Active</div>
+                        <div class="warning-alert-text">
+                            You cannot save settings or documents without creating a workspace.
+                            Sign in or create an account to get started.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Sign In</button>
+                    <button class="auth-tab" data-tab="signup">Create Account</button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="auth-form active" id="login-form">
+                    <div class="form-group">
+                        <label for="login-id">User ID</label>
+                        <input type="text" id="login-id" placeholder="john.doe" required autocomplete="username" />
+                        <div class="form-hint">Your local user identifier</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required
+                            autocomplete="current-password" />
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me" />
+                        <label for="remember-me">Remember this device</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+
+                <!-- Sign Up Form -->
+                <form class="auth-form" id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-id">User ID</label>
+                        <input type="text" id="signup-id" placeholder="john.doe" required autocomplete="username" />
+                        <div class="form-hint">
+                            Choose any ID you want – it's stored locally only. No cloud, no tracking.
+                        </div>
+                        <div class="form-example">
+                            <div class="form-example-title">💡 Recommendation</div>
+                            <div class="form-example-text">
+                                LANTERN recommends using your primary email <strong>without @ and domain</strong>
+                                since it's easier to remember.<br>
+                                <strong>Examples:</strong> <code>john.doe</code>, <code>jane.smith</code>,
+                                <code>alex.rivera</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a strong password" required
+                            autocomplete="new-password" />
+                        <div class="form-hint">
+                            Use a different password than your email. Better safe than sorry!
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-password-confirm">Confirm Password</label>
+                        <input type="password" id="signup-password-confirm" placeholder="Re-enter your password"
+                            required autocomplete="new-password" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="first-workspace-name">First Workspace Name</label>
+                        <input type="text" id="first-workspace-name" placeholder="My Project" required />
+                        <div class="form-hint">You can create more workspaces later</div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agree-terms" required />
+                        <label for="agree-terms">
+                            ⚠️ I understand this is stored <strong>locally only</strong>. No recovery if password is
+                            lost.
+                            This is open-source – you can verify the code yourself.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </form>
+
+                <div class="auth-link">
+                    <a href="../../index.html">← Back to Home</a>
+                </div>
+            </div>
+
+            <!-- Workspace Selection View (shown after successful login) -->
+            <div id="workspace-view" class="workspace-selection">
+                <div class="workspace-header">
+                    <h2>Select Workspace</h2>
+                    <p id="user-greeting">Welcome back!</p>
+                </div>
+
+                <div class="workspace-list" id="workspace-list">
+                    <!-- Workspaces will be dynamically populated here -->
+                </div>
+
+                <div class="divider"></div>
+
+                <button class="btn btn-secondary" id="create-new-workspace-btn">
+                    + Create New Workspace
+                </button>
+
+                <div class="auth-link">
+                    <button id="logout-btn">Switch Account</button>
+                </div>
+
+                <div class="auth-link">
+                    <a href="../../index.html">← Back to Home</a>
+                </div>
+            </div>
+
+            <!-- New Workspace Form (shown when creating additional workspaces) -->
+            <div id="new-workspace-view" class="workspace-selection">
+                <div class="workspace-header">
+                    <h2>Create New Workspace</h2>
+                    <p>Add another workspace to your account</p>
+                </div>
+
+                <form id="new-workspace-form">
+                    <div class="form-group">
+                        <label for="new-workspace-name">Workspace Name</label>
+                        <input type="text" id="new-workspace-name" placeholder="My New Project" required />
+                        <div class="form-hint">Choose a descriptive name for this workspace</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-workspace-id">Workspace ID</label>
+                        <input type="text" id="new-workspace-id" placeholder="my-new-project" />
+                        <div class="form-hint">
+                            Optional - will auto-generate from name. Uses your account ID as prefix for organization.
+                            Example: <code>personal-notes</code>, <code>work-docs</code>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Workspace</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-new-workspace-btn"
+                        style="margin-top: 12px;">Cancel</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Delete Workspace Modal -->
+    <div id="delete-workspace-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+        <div
+            style="background: var(--bg-glass); backdrop-filter: var(--blur-strong); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 32px; max-width: 480px; width: 90%; margin: 20px;">
+            <h2 style="color: #ff6b6b; margin-bottom: 16px; font-size: 20px;">⚠️ Delete Workspace</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">This action <strong>cannot
+                    be undone</strong>. All settings and data for this workspace will be permanently deleted.</p>
+
+            <div
+                style="background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; border-left: 3px solid #ff6b6b;">
+                <p style="color: var(--text-primary); margin-bottom: 8px; font-weight: 500;">Workspace to delete:</p>
+                <p id="delete-workspace-name" style="color: var(--accent); font-size: 16px; font-weight: 600;"></p>
+            </div>
+
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">Type the workspace name to
+                confirm:</p>
+            <input type="text" id="delete-workspace-confirm" placeholder="Type workspace name here" autocomplete="off"
+                style="width: 100%; padding: 12px; background: var(--bg-elevated); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 14px; margin-bottom: 24px;" />
+
+            <div style="display: flex; gap: 12px;">
+                <button id="cancel-delete-btn" class="btn-secondary" style="flex: 1;">Cancel</button>
+                <button id="confirm-delete-btn" class="btn-primary"
+                    style="flex: 1; background: #ff6b6b; border-color: #ff6b6b; color: white;" disabled>Delete
+                    Workspace</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           Theme System
+           ========================================================= */
+
+        const themes = {
+            walnut: {
+                "--bg-main": "#2E1F1B",
+                "--bg-accent": "#5E4B43",
+                "--bg-glass": "rgba(255,255,255,0.06)",
+                "--bg-elevated": "rgba(94,75,67,0.28)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#F3ECE9",
+                "--text-secondary": "#C9B8AE",
+                "--text-muted": "#9B8578",
+                "--accent": "#E6D3C4"
+            },
+            ash: {
+                "--bg-main": "#1C1E21",
+                "--bg-accent": "#2A2D31",
+                "--bg-glass": "rgba(255,255,255,0.05)",
+                "--bg-elevated": "rgba(255,255,255,0.08)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#E6E8EB",
+                "--text-secondary": "#B0B6BF",
+                "--text-muted": "#8A9099",
+                "--accent": "#FFFFFF"
+            },
+            paper: {
+                "--bg-main": "#F6F2EE",
+                "--bg-accent": "#FFFFFF",
+                "--bg-glass": "rgba(0,0,0,0.04)",
+                "--bg-elevated": "rgba(0,0,0,0.06)",
+                "--border-glass": "rgba(0,0,0,0.12)",
+                "--text-primary": "#2E1F1B",
+                "--text-secondary": "#5E4B43",
+                "--text-muted": "#7A6A61",
+                "--accent": "#2E1F1B"
+            }
+        };
+
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+
+            Object.entries(theme).forEach(([key, value]) => {
+                document.documentElement.style.setProperty(key, value);
+            });
+        }
+
+        // Load default theme (no workspace context on login page)
+        const defaultTheme = "paper";
+        const savedTheme = localStorage.getItem("lantern-global-theme") || defaultTheme;
+        applyTheme(savedTheme);
+
+        /* =========================================================
+           View Management
+           ========================================================= */
+
+        const authView = document.getElementById('auth-view');
+        const workspaceView = document.getElementById('workspace-view');
+        const newWorkspaceView = document.getElementById('new-workspace-view');
+        const noWorkspaceWarning = document.getElementById('no-workspace-warning');
+
+        let currentUser = null;
+
+        function showView(view) {
+            authView.style.display = 'none';
+            workspaceView.style.display = 'none';
+            newWorkspaceView.style.display = 'none';
+
+            if (view === 'auth') authView.style.display = 'block';
+            if (view === 'workspace') workspaceView.style.display = 'block';
+            if (view === 'new-workspace') newWorkspaceView.style.display = 'block';
+        }
+
+        /* =========================================================
+           Check for No Workspace Warning
+           ========================================================= */
+
+        function checkWorkspaceStatus() {
+            const unlocked = localStorage.getItem('lantern-unlocked') === 'true';
+            const currentWorkspace = localStorage.getItem('lantern-current-workspace');
+
+            if (!unlocked || !currentWorkspace) {
+                noWorkspaceWarning.style.display = 'flex';
+            } else {
+                noWorkspaceWarning.style.display = 'none';
+            }
+        }
+
+        checkWorkspaceStatus();
+
+        /* =========================================================
+           Tab Switching
+           ========================================================= */
+
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                // Update active tab
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update active form
+                authForms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === `${tabName}-form`) {
+                        form.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        /* =========================================================
+           User Account Management
+           ========================================================= */
+
+        // Hash function for passwords (simple for demo - use bcrypt in production)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Get user account
+        function getUserAccount(userId) {
+            const accountKey = `${userId}-lantern-account`;
+            const accountData = localStorage.getItem(accountKey);
+            return accountData ? JSON.parse(accountData) : null;
+        }
+
+        // Create user account
+        function createUserAccount(userId, passwordHash) {
+            const accountKey = `${userId}-lantern-account`;
+            const accountData = {
+                userId: userId,
+                passwordHash: passwordHash,
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem(accountKey, JSON.stringify(accountData));
+        }
+
+        // Get user's workspaces
+        function getUserWorkspaces(userId) {
+            const workspacesKey = `${userId}-lantern-workspaces`;
+            const workspacesData = localStorage.getItem(workspacesKey);
+            return workspacesData ? JSON.parse(workspacesData) : [];
+        }
+
+        // Add workspace to user
+        function addWorkspaceToUser(userId, workspaceId, workspaceName) {
+            const workspaces = getUserWorkspaces(userId);
+
+            // Check if workspace ID already exists
+            if (workspaces.some(ws => ws.id === workspaceId)) {
+                return { success: false, error: 'Workspace ID already exists' };
+            }
+
+            const newWorkspace = {
+                id: workspaceId,
+                name: workspaceName,
+                createdAt: new Date().toISOString()
+            };
+
+            workspaces.push(newWorkspace);
+
+            const workspacesKey = `${userId}-lantern-workspaces`;
+            localStorage.setItem(workspacesKey, JSON.stringify(workspaces));
+
+            return { success: true, workspace: newWorkspace };
+        }
+
+        // Load workspace (set as current)
+        function loadWorkspace(userId, workspace) {
+            localStorage.setItem('lantern-unlocked', 'true');
+            localStorage.setItem('lantern-current-user', userId);
+
+            // Format workspace object for compatibility with index pages
+            const formattedWorkspace = {
+                id: workspace.id,
+                displayName: workspace.name,
+                userId: userId,
+                createdAt: workspace.createdAt
+            };
+            localStorage.setItem('lantern-current-workspace', JSON.stringify(formattedWorkspace));
+
+            // Redirect to home page
+            window.location.href = '../../index.html';
+        }
+
+        /* =========================================================
+           Login Form Handler
+           ========================================================= */
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = document.getElementById('login-id').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            // Check if user exists
+            const account = getUserAccount(userId);
+            if (!account) {
+                alert('User ID not found. Please create an account first.');
+                return;
+            }
+
+            // Verify password
+            const passwordHash = await hashPassword(password);
+            if (passwordHash !== account.passwordHash) {
+                alert('Incorrect password. Please try again.');
+                return;
+            }
+
+            // Login successful - show workspace selection
+            currentUser = userId;
+            showWorkspaceSelection();
+        });
+
+        /* =========================================================
+           Sign Up Form Handler
+           ========================================================= */
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = document.getElementById('signup-id').value.trim().toLowerCase();
+            const password = document.getElementById('signup-password').value;
+            const passwordConfirm = document.getElementById('signup-password-confirm').value;
+            const workspaceName = document.getElementById('first-workspace-name').value.trim();
+
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+
+            // Check if user already exists
+            if (getUserAccount(userId)) {
+                alert('This User ID already exists. Please sign in or choose a different ID.');
+                return;
+            }
+
+            // Validate workspace name
+            if (!workspaceName) {
+                alert('Please enter a workspace name.');
+                return;
+            }
+
+            // Create account
+            const passwordHash = await hashPassword(password);
+            createUserAccount(userId, passwordHash);
+
+            // Create first workspace with auto-generated ID
+            const workspaceId = workspaceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            const result = addWorkspaceToUser(userId, workspaceId, workspaceName);
+
+            if (!result.success) {
+                alert('Error creating workspace: ' + result.error);
+                return;
+            }
+
+            // Account created! Load the first workspace
+            loadWorkspace(userId, result.workspace);
+        });
+
+        /* =========================================================
+           Workspace Selection
+           ========================================================= */
+
+        function showWorkspaceSelection() {
+            const workspaces = getUserWorkspaces(currentUser);
+            const workspaceList = document.getElementById('workspace-list');
+            const userGreeting = document.getElementById('user-greeting');
+
+            userGreeting.textContent = `Welcome back, ${currentUser}!`;
+
+            // Clear list
+            workspaceList.innerHTML = '';
+
+            if (workspaces.length === 0) {
+                // Show empty state
+                workspaceList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <div class="empty-state-title">No Workspaces Yet</div>
+                        <div class="empty-state-text">
+                            Create your first workspace to get started
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Render workspace items
+                workspaces.forEach(workspace => {
+                    const item = document.createElement('div');
+                    item.className = 'workspace-item';
+                    item.innerHTML = `
+                        <div class="workspace-item-info">
+                            <h3>${workspace.name}</h3>
+                            <p>ID: ${workspace.id}</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button class="delete-workspace-btn" data-workspace-id="${workspace.id}" data-workspace-name="${workspace.name}" style="padding: 6px 12px; background: transparent; border: 1px solid rgba(255,107,107,0.3); color: #ff6b6b; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s;">Delete</button>
+                            <div class="workspace-item-arrow">→</div>
+                        </div>
+                    `;
+
+                    // Load workspace on click (but not on delete button)
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('delete-workspace-btn')) {
+                            loadWorkspace(currentUser, workspace);
+                        }
+                    });
+
+                    // Delete workspace handler
+                    const deleteBtn = item.querySelector('.delete-workspace-btn');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showDeleteWorkspaceModal(workspace);
+                    });
+
+                    workspaceList.appendChild(item);
+                });
+            }
+
+            showView('workspace');
+        }
+
+        /* =========================================================
+           Create New Workspace
+           ========================================================= */
+
+        document.getElementById('create-new-workspace-btn').addEventListener('click', () => {
+            showView('new-workspace');
+        });
+
+        document.getElementById('cancel-new-workspace-btn').addEventListener('click', () => {
+            showView('workspace');
+        });
+
+        document.getElementById('new-workspace-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const workspaceName = document.getElementById('new-workspace-name').value.trim();
+            let workspaceId = document.getElementById('new-workspace-id').value.trim().toLowerCase();
+
+            // Validate
+            if (!workspaceName) {
+                alert('Please enter a workspace name.');
+                return;
+            }
+
+            // Auto-generate workspace ID if not provided
+            if (!workspaceId) {
+                workspaceId = workspaceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            }
+
+            // Validate workspace ID format
+            if (!/^[a-z0-9-]+$/.test(workspaceId)) {
+                alert('Workspace ID can only contain lowercase letters, numbers, and hyphens.');
+                return;
+            }
+
+            // Prefix workspace ID with user ID to ensure uniqueness across users
+            const fullWorkspaceId = `${currentUser}-${workspaceId}`;
+
+            // Create workspace
+            const result = addWorkspaceToUser(currentUser, fullWorkspaceId, workspaceName);
+
+            if (!result.success) {
+                alert('Error: ' + result.error);
+                return;
+            }
+
+            // Success! Load the new workspace
+            loadWorkspace(currentUser, result.workspace);
+        });
+
+        /* =========================================================
+           Delete Workspace
+           ========================================================= */
+
+        const deleteModal = document.getElementById('delete-workspace-modal');
+        const deleteConfirmInput = document.getElementById('delete-workspace-confirm');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        let workspaceToDelete = null;
+
+        function showDeleteWorkspaceModal(workspace) {
+            // First confirmation
+            if (!confirm(`Are you absolutely sure you want to delete the workspace "${workspace.name}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            // Show modal for second confirmation
+            workspaceToDelete = workspace;
+            document.getElementById('delete-workspace-name').textContent = workspace.name;
+            deleteConfirmInput.value = '';
+            confirmDeleteBtn.disabled = true;
+            deleteModal.style.display = 'flex';
+        }
+
+        // Prevent pasting in confirmation input
+        deleteConfirmInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            alert('Pasting is not allowed. Please type the workspace name manually.');
+        });
+
+        // Enable delete button only when workspace name matches
+        deleteConfirmInput.addEventListener('input', (e) => {
+            if (workspaceToDelete && e.target.value === workspaceToDelete.name) {
+                confirmDeleteBtn.disabled = false;
+            } else {
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+            workspaceToDelete = null;
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (!workspaceToDelete || !currentUser) return;
+
+            // Remove workspace from user's workspace list
+            const workspacesKey = `${currentUser}-lantern-workspaces`;
+            const workspacesData = localStorage.getItem(workspacesKey);
+
+            if (workspacesData) {
+                const workspaces = JSON.parse(workspacesData);
+                const updatedWorkspaces = workspaces.filter(ws => ws.id !== workspaceToDelete.id);
+                localStorage.setItem(workspacesKey, JSON.stringify(updatedWorkspaces));
+            }
+
+            // Delete all workspace-specific data
+            const prefix = `${workspaceToDelete.id}-lantern-`;
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(prefix)) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Close modal and refresh workspace list
+            deleteModal.style.display = 'none';
+            const deletedName = workspaceToDelete.name;
+            workspaceToDelete = null;
+
+            alert(`Workspace "${deletedName}" has been permanently deleted.`);
+
+            // Refresh the workspace selection view
+            showWorkspaceSelection();
+        });
+
+        // Close modal on background click
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                deleteModal.style.display = 'none';
+                workspaceToDelete = null;
+            }
+        });
+
+        /* =========================================================
+           Logout
+           ========================================================= */
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            // Clear user session to allow switching accounts
+            localStorage.removeItem('lantern-current-user');
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-unlocked');
+
+            currentUser = null;
+            showView('auth');
+
+            // Clear form fields
+            document.getElementById('login-form').reset();
+        });
+
+        /* =========================================================
+           Initialize
+           ========================================================= */
+
+        // Check if user is already logged in
+        (function checkExistingSession() {
+            const existingUser = localStorage.getItem('lantern-current-user');
+            if (existingUser) {
+                // User is already logged in, show workspace selection
+                currentUser = existingUser;
+                showWorkspaceSelection();
+            } else {
+                // Check for no workspace warning
+                checkWorkspaceStatus();
+            }
+        })();
+
+    </script>
+
+</body>
+
+</html>

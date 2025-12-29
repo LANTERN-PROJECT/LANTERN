@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - LANTERN</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../common/commonStyles.css" />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../Assets/Favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../Assets/Favicon/favicon-16x16.png">
+    <link rel="manifest" href="../Assets/Favicon/site.webmanifest">
+
+    <style>
+        /* Settings Page Specific Styles */
+        .settings-container {
+            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 80px 80px;
+        }
+
+        .settings-header {
+            margin-bottom: 48px;
+        }
+
+        .settings-header h1 {
+            font-size: clamp(32px, 3vw, 48px);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .settings-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .settings-section {
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur-soft);
+            border: 1px solid var(--border-glass);
+        }
+
+        .settings-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .settings-section .section-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .setting-item {
+            margin-bottom: 24px;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-item label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .setting-item .setting-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .setting-item select,
+        .setting-item input[type="text"],
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            font-size: 14px;
+            outline: none;
+            transition: border var(--transition-fast);
+        }
+
+        .setting-item select:focus,
+        .setting-item input:focus {
+            border-color: var(--accent);
+        }
+
+        .setting-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .setting-toggle label {
+            margin-bottom: 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: 999px;
+            transition: all var(--transition-base);
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all var(--transition-base);
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(22px);
+            background: var(--bg-main);
+        }
+
+        .theme-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .theme-card {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-glass);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: center;
+        }
+
+        .theme-card:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-card.active {
+            border-color: var(--accent);
+            background: var(--bg-elevated);
+        }
+
+        .theme-card .theme-name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .theme-card .theme-colors {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .theme-card .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: var(--bg-main);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glass);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-glass);
+        }
+
+        @media (max-width: 900px) {
+            .settings-container {
+                padding: 100px 24px 40px;
+            }
+
+            .theme-preview {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">LANTERN</div>
+
+        <div class="links">
+            <span onclick="window.location.href='../index.html'">Home</span>
+            <span>Docs</span>
+            <span>Notes</span>
+            <span>Workspace</span>
+            <span style="color: var(--text-primary)">Settings</span>
+        </div>
+
+        <!-- Dynamic Workspace/Login Button -->
+        <div id="nav-auth-container"></div>
+    </nav>
+
+    <!-- Orb -->
+    <div class="orb-container">
+        <div class="orb"></div>
+    </div>
+
+    <!-- Settings Container -->
+    <div class="settings-container">
+
+        <!-- Header -->
+        <div class="settings-header">
+            <h1>Settings</h1>
+            <p>Customize your LANTERN experience</p>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+
+            <!-- Appearance Section -->
+            <div class="settings-section">
+                <h2>Appearance</h2>
+                <p class="section-description">Customize the look and feel of LANTERN</p>
+
+                <div class="setting-item">
+                    <label for="theme-select">Theme</label>
+                    <span class="setting-hint">Choose your preferred color scheme</span>
+
+                    <div class="theme-preview">
+                        <div class="theme-card" data-theme="walnut">
+                            <div class="theme-name">Walnut Noir</div>
+                            <div class="theme-colors">
+                                <div class="color-dot" style="background: #2E1F1B"></div>
+                                <div class="color-dot" style="background: #5E4B43"></div>
+                                <div class="color-dot" style="background: #E6D3C4"></div>
+                            </div>
+                        </div>
+
+                        <div class="theme-card" data-theme="ash">
+                            <div class="theme-name">Ash</div>
+                            <div class="theme-colors">
+                                <div class="color-dot" style="background: #1C1E21"></div>
+                                <div class="color-dot" style="background: #2A2D31"></div>
+                                <div class="color-dot" style="background: #FFFFFF"></div>
+                            </div>
+                        </div>
+
+                        <div class="theme-card" data-theme="paper">
+                            <div class="theme-name">Paper</div>
+                            <div class="theme-colors">
+                                <div class="color-dot" style="background: #F6F2EE"></div>
+                                <div class="color-dot" style="background: #FFFFFF"></div>
+                                <div class="color-dot" style="background: #2E1F1B"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Animations</label>
+                        <span class="setting-hint">Enable smooth transitions and effects</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="animations-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Reduce Motion</label>
+                        <span class="setting-hint">Minimize animations for accessibility</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="reduce-motion-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Privacy Section -->
+            <div class="settings-section">
+                <h2>Privacy & Data</h2>
+                <p class="section-description">Control how your data is stored and used</p>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Local Storage Only</label>
+                        <span class="setting-hint">Keep all data on your device</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="local-only-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Analytics</label>
+                        <span class="setting-hint">Help improve LANTERN with anonymous usage data</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="analytics-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <label for="data-location">Data Storage Location</label>
+                    <span class="setting-hint">Where your files are stored</span>
+                    <input type="text" id="data-location" value="~/Documents/LANTERN-DATA" readonly>
+                </div>
+            </div>
+
+            <!-- Editor Section -->
+            <div class="settings-section">
+                <h2>Editor</h2>
+                <p class="section-description">Configure your editing experience</p>
+
+                <div class="setting-item">
+                    <label for="font-size">Font Size</label>
+                    <span class="setting-hint">Default editor font size (px)</span>
+                    <input type="number" id="font-size" value="14" min="10" max="24">
+                </div>
+
+                <div class="setting-item">
+                    <label for="font-family">Font Family</label>
+                    <span class="setting-hint">Choose your preferred typeface</span>
+                    <select id="font-family">
+                        <option value="inter">Inter</option>
+                        <option value="system">System</option>
+                        <option value="mono">Monospace</option>
+                    </select>
+                </div>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Auto-Save</label>
+                        <span class="setting-hint">Automatically save changes as you type</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autosave-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Spell Check</label>
+                        <span class="setting-hint">Check spelling as you type</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="spellcheck-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Advanced Section -->
+            <div class="settings-section">
+                <h2>Advanced</h2>
+                <p class="section-description">Advanced configuration options</p>
+
+                <div class="setting-item setting-toggle">
+                    <div>
+                        <label>Developer Mode</label>
+                        <span class="setting-hint">Enable debug tools and console</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dev-mode-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-secondary" id="reset-btn">Reset to Defaults</button>
+                    <button class="btn-secondary" id="import-btn">Import Settings</button>
+                    <button class="btn-secondary" id="export-btn">Export Settings</button>
+                    <button class="btn-primary" id="save-btn">Save Changes</button>
+                </div>
+
+                <!-- Danger Zone -->
+                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-glass);">
+                    <h3 style="color: #ff6b6b; font-size: 14px; margin-bottom: 12px;">⚠️ Danger Zone</h3>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn-secondary" id="delete-workspace-btn" style="border-color: #ff6b6b; color: #ff6b6b;">Delete Workspace</button>
+                        <button class="btn-secondary" id="delete-account-btn" style="border-color: #ff3838; color: #ff3838; font-weight: 600;">Delete Account</button>
+                    </div>
+                </div>
+
+                <!-- Hidden file input for import -->
+                <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Delete Workspace Modal -->
+    <div id="delete-workspace-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-glass); backdrop-filter: var(--blur-strong); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 32px; max-width: 480px; width: 90%;">
+            <h2 style="color: #ff6b6b; margin-bottom: 16px; font-size: 20px;">⚠️ Delete Workspace</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">This action <strong>cannot be undone</strong>. All settings and data for this workspace will be permanently deleted from your device.</p>
+            
+            <div style="background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; border-left: 3px solid #ff6b6b;">
+                <p style="color: var(--text-primary); margin-bottom: 8px; font-weight: 500;">Workspace to delete:</p>
+                <p id="delete-workspace-name" style="color: var(--accent); font-size: 16px; font-weight: 600;"></p>
+            </div>
+
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">Type the workspace name to confirm:</p>
+            <input type="text" id="delete-workspace-confirm" placeholder="Type workspace name here" autocomplete="off" style="width: 100%; padding: 12px; background: var(--bg-elevated); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 14px; margin-bottom: 24px;" />
+            
+            <div style="display: flex; gap: 12px;">
+                <button id="cancel-delete-btn" class="btn-secondary" style="flex: 1;">Cancel</button>
+                <button id="confirm-delete-btn" class="btn-primary" style="flex: 1; background: #ff6b6b; border-color: #ff6b6b; color: white;" disabled>Delete Workspace</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-account-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-glass); backdrop-filter: var(--blur-strong); border: 2px solid #ff3838; border-radius: var(--radius-lg); padding: 32px; max-width: 500px; width: 90%;">
+            <h2 style="color: #ff3838; margin-bottom: 16px; font-size: 22px;">⚠️ Delete Account</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; font-size: 15px;">This will <strong>permanently delete your account</strong> and <strong>ALL workspaces</strong> associated with it. This action <strong>CANNOT be undone</strong>.</p>
+            
+            <div style="background: rgba(255,56,56,0.1); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; border-left: 4px solid #ff3838;">
+                <p style="color: var(--text-primary); margin-bottom: 8px; font-weight: 600; font-size: 14px;">Account to delete:</p>
+                <p id="delete-account-id" style="color: #ff3838; font-size: 18px; font-weight: 700; margin-bottom: 12px;"></p>
+                <p style="color: var(--text-secondary); font-size: 13px; font-weight: 500;">Workspaces that will be deleted:</p>
+                <ul id="delete-account-workspaces" style="color: var(--text-muted); font-size: 13px; margin-top: 8px; padding-left: 20px;"></ul>
+            </div>
+
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px; font-weight: 500;">Type your User ID to confirm deletion:</p>
+            <input type="text" id="delete-account-confirm" placeholder="Type your User ID here" autocomplete="off" style="width: 100%; padding: 12px; background: var(--bg-elevated); border: 2px solid #ff3838; border-radius: var(--radius-sm); color: var(--text-primary); font-size: 14px; margin-bottom: 24px; font-weight: 500;" />
+            
+            <div style="display: flex; gap: 12px;">
+                <button id="cancel-delete-account-btn" class="btn-secondary" style="flex: 1;">Cancel</button>
+                <button id="confirm-delete-account-btn" class="btn-primary" style="flex: 1; background: #ff3838; border-color: #ff3838; color: white; font-weight: 700;" disabled>Delete Account Forever</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        /* =========================================================
+           Theme System
+           ========================================================= 
+        */
+
+        const themes = {
+            walnut: {
+                "--bg-main": "#2E1F1B",
+                "--bg-accent": "#5E4B43",
+                "--bg-glass": "rgba(255,255,255,0.06)",
+                "--bg-elevated": "rgba(94,75,67,0.28)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#F3ECE9",
+                "--text-secondary": "#C9B8AE",
+                "--text-muted": "#9B8578",
+                "--accent": "#E6D3C4"
+            },
+
+            ash: {
+                "--bg-main": "#1C1E21",
+                "--bg-accent": "#2A2D31",
+                "--bg-glass": "rgba(255,255,255,0.05)",
+                "--bg-elevated": "rgba(255,255,255,0.08)",
+                "--border-glass": "rgba(255,255,255,0.12)",
+                "--text-primary": "#E6E8EB",
+                "--text-secondary": "#B0B6BF",
+                "--text-muted": "#8A9099",
+                "--accent": "#FFFFFF"
+            },
+
+            paper: {
+                "--bg-main": "#F6F2EE",
+                "--bg-accent": "#FFFFFF",
+                "--bg-glass": "rgba(0,0,0,0.04)",
+                "--bg-elevated": "rgba(0,0,0,0.06)",
+                "--border-glass": "rgba(0,0,0,0.12)",
+                "--text-primary": "#2E1F1B",
+                "--text-secondary": "#5E4B43",
+                "--text-muted": "#7A6A61",
+                "--accent": "#2E1F1B"
+            }
+        };
+
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+
+            Object.entries(theme).forEach(([key, value]) => {
+                document.documentElement.style.setProperty(key, value);
+            });
+
+            // Update active theme card
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('active');
+                if (card.dataset.theme === themeName) {
+                    card.classList.add('active');
+                }
+            });
+
+            // Save theme with workspace prefix
+            setWorkspaceStorage("lantern-theme", themeName);
+        }
+
+        /* =========================================================
+           Theme Card Selection
+           ========================================================= */
+
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const themeName = card.dataset.theme;
+                applyTheme(themeName);
+            });
+        });
+
+        /* =========================================================
+           Load Saved Settings
+           ========================================================= */
+
+        function getStorageKey(key) {
+            const currentWorkspace = getCurrentWorkspace();
+            if (currentWorkspace && currentWorkspace.id) {
+                return `${currentWorkspace.id}-${key}`;
+            }
+            // Use guest prefix for non-logged-in users
+            return `guest-${key}`;
+        }
+
+        function getWorkspaceStorage(key, defaultValue = null) {
+            const storageKey = getStorageKey(key);
+            const value = localStorage.getItem(storageKey);
+            return value !== null ? value : defaultValue;
+        }
+
+        function setWorkspaceStorage(key, value) {
+            const storageKey = getStorageKey(key);
+            localStorage.setItem(storageKey, value);
+        }
+
+        function loadSettings() {
+            // Load theme (workspace-specific)
+            const defaultTheme = "paper"; // walnut, ash, paper
+            const savedTheme = getWorkspaceStorage("lantern-theme", defaultTheme);
+            applyTheme(savedTheme);
+
+            // Load workspace-specific settings
+            const animations = getWorkspaceStorage("lantern-animations") !== "false";
+            document.getElementById("animations-toggle").checked = animations;
+
+            const reduceMotion = getWorkspaceStorage("lantern-reduce-motion") === "true";
+            document.getElementById("reduce-motion-toggle").checked = reduceMotion;
+
+            const localOnly = getWorkspaceStorage("lantern-local-only") !== "false";
+            document.getElementById("local-only-toggle").checked = localOnly;
+
+            const analytics = getWorkspaceStorage("lantern-analytics") === "true";
+            document.getElementById("analytics-toggle").checked = analytics;
+
+            const fontSize = getWorkspaceStorage("lantern-font-size") || "14";
+            document.getElementById("font-size").value = fontSize;
+
+            const fontFamily = getWorkspaceStorage("lantern-font-family") || "inter";
+            document.getElementById("font-family").value = fontFamily;
+
+            const autoSave = getWorkspaceStorage("lantern-autosave") !== "false";
+            document.getElementById("autosave-toggle").checked = autoSave;
+
+            const spellCheck = getWorkspaceStorage("lantern-spellcheck") !== "false";
+            document.getElementById("spellcheck-toggle").checked = spellCheck;
+
+            const devMode = getWorkspaceStorage("lantern-dev-mode") === "true";
+            document.getElementById("dev-mode-toggle").checked = devMode;
+        }
+
+        /* =========================================================
+           Save Settings
+           ========================================================= */
+
+        function saveSettings() {
+            // Save theme (global setting)
+            // Theme is already saved in applyTheme function
+
+            // Save workspace-specific settings
+            setWorkspaceStorage("lantern-animations",
+                document.getElementById("animations-toggle").checked);
+
+            setWorkspaceStorage("lantern-reduce-motion",
+                document.getElementById("reduce-motion-toggle").checked);
+
+            setWorkspaceStorage("lantern-local-only",
+                document.getElementById("local-only-toggle").checked);
+
+            setWorkspaceStorage("lantern-analytics",
+                document.getElementById("analytics-toggle").checked);
+
+            setWorkspaceStorage("lantern-font-size",
+                document.getElementById("font-size").value);
+
+            setWorkspaceStorage("lantern-font-family",
+                document.getElementById("font-family").value);
+
+            setWorkspaceStorage("lantern-autosave",
+                document.getElementById("autosave-toggle").checked);
+
+            setWorkspaceStorage("lantern-spellcheck",
+                document.getElementById("spellcheck-toggle").checked);
+
+            setWorkspaceStorage("lantern-dev-mode",
+                document.getElementById("dev-mode-toggle").checked);
+
+            // Show confirmation
+            const btn = document.getElementById("save-btn");
+            const originalText = btn.textContent;
+            btn.textContent = "✓ Saved!";
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+
+        /* =========================================================
+           Reset Settings
+           ========================================================= */
+
+        function resetSettings() {
+            const currentWorkspace = getCurrentWorkspace();
+            const prefix = currentWorkspace && currentWorkspace.id 
+                ? `${currentWorkspace.id}-lantern-`
+                : 'guest-lantern-';
+            
+            const workspaceType = currentWorkspace && currentWorkspace.id ? 'workspace' : 'guest';
+            
+            if (!confirm(`Are you sure you want to reset all ${workspaceType} settings to defaults?`)) {
+                return;
+            }
+
+            // Clear workspace-specific or guest settings
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(prefix)) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Reload settings
+            loadSettings();
+
+            alert(`Settings have been reset to defaults.`);
+        }
+
+        /* =========================================================
+           Export Settings
+           ========================================================= */
+
+        function exportSettings() {
+            const currentWorkspace = getCurrentWorkspace();
+            const isGuest = !currentWorkspace || !currentWorkspace.id;
+            
+            const settings = {
+                workspaceId: isGuest ? 'guest' : currentWorkspace.id,
+                workspaceName: isGuest ? 'Guest Settings' : currentWorkspace.displayName,
+                exportDate: new Date().toISOString(),
+                settings: {}
+            };
+
+            // Export workspace-specific or guest settings (including theme)
+            const prefix = isGuest ? 'guest-lantern-' : `${currentWorkspace.id}-lantern-`;
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(prefix)) {
+                    // Store with the lantern- prefix only (remove workspace/guest ID)
+                    const settingKey = key.substring(prefix.length - 8); // Keep 'lantern-'
+                    settings.settings[settingKey] = localStorage.getItem(key);
+                }
+            });
+
+            const dataStr = JSON.stringify(settings, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = isGuest ? 'guest-settings.json' : `${currentWorkspace.id}-settings.json`;
+            link.download = filename;
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        /* =========================================================
+           Import Settings
+           ========================================================= */
+
+        function importSettings() {
+            const fileInput = document.getElementById('import-file-input');
+            fileInput.click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const currentWorkspace = getCurrentWorkspace();
+            const isGuest = !currentWorkspace || !currentWorkspace.id;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    // Validate file format
+                    if (!data.settings || typeof data.settings !== 'object') {
+                        alert('Invalid settings file format.');
+                        return;
+                    }
+
+                    // Import settings with appropriate prefix
+                    const prefix = isGuest ? 'guest-' : `${currentWorkspace.id}-`;
+                    Object.entries(data.settings).forEach(([key, value]) => {
+                        if (key.startsWith('lantern-')) {
+                            // Prefix all settings with current workspace ID or guest
+                            const prefixedKey = `${prefix}${key}`;
+                            localStorage.setItem(prefixedKey, value);
+                        }
+                    });
+
+                    // Reload settings to apply changes
+                    loadSettings();
+
+                    const sourceWorkspace = data.workspaceId ? ` from "${data.workspaceId}"` : '';
+                    alert(`Settings imported successfully${sourceWorkspace}!`);
+                } catch (error) {
+                    alert('Error reading settings file. Please ensure it is a valid JSON file.');
+                    console.error('Import error:', error);
+                }
+            };
+
+            reader.readAsText(file);
+
+            // Reset the file input
+            event.target.value = '';
+        }
+
+        /* =========================================================
+           Event Listeners
+           ========================================================= */
+
+        document.getElementById("save-btn").addEventListener("click", saveSettings);
+        document.getElementById("reset-btn").addEventListener("click", resetSettings);
+        document.getElementById("import-btn").addEventListener("click", importSettings);
+        document.getElementById("export-btn").addEventListener("click", exportSettings);
+        document.getElementById("import-file-input").addEventListener("change", handleImportFile);
+
+        // Apply reduce motion preference
+        document.getElementById("reduce-motion-toggle").addEventListener("change", (e) => {
+            if (e.target.checked) {
+                document.documentElement.style.setProperty('--transition-fast', '0s');
+                document.documentElement.style.setProperty('--transition-base', '0s');
+            } else {
+                document.documentElement.style.setProperty('--transition-fast', '0.15s ease');
+                document.documentElement.style.setProperty('--transition-base', '0.25s ease');
+            }
+        });
+
+        /* =========================================================
+           Delete Workspace
+           ========================================================= */
+
+        const deleteModal = document.getElementById('delete-workspace-modal');
+        const deleteConfirmInput = document.getElementById('delete-workspace-confirm');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        let workspaceToDelete = null;
+
+        // Prevent pasting in confirmation input
+        deleteConfirmInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            alert('Pasting is not allowed. Please type the workspace name manually.');
+        });
+
+        // Enable delete button only when workspace name matches
+        deleteConfirmInput.addEventListener('input', (e) => {
+            if (workspaceToDelete && e.target.value === workspaceToDelete.name) {
+                confirmDeleteBtn.disabled = false;
+            } else {
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+        document.getElementById('delete-workspace-btn').addEventListener('click', () => {
+            const currentWorkspace = getCurrentWorkspace();
+            
+            if (!currentWorkspace || !currentWorkspace.id) {
+                alert('No workspace is currently active. Guest mode cannot be deleted.');
+                return;
+            }
+
+            // First confirmation
+            if (!confirm(`Are you absolutely sure you want to delete the workspace "${currentWorkspace.displayName}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            // Show modal for second confirmation
+            workspaceToDelete = {
+                id: currentWorkspace.id,
+                name: currentWorkspace.displayName,
+                userId: currentWorkspace.userId
+            };
+            
+            document.getElementById('delete-workspace-name').textContent = workspaceToDelete.name;
+            deleteConfirmInput.value = '';
+            confirmDeleteBtn.disabled = true;
+            deleteModal.style.display = 'flex';
+        });
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+            workspaceToDelete = null;
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (!workspaceToDelete) return;
+
+            const currentUser = workspaceToDelete.userId || localStorage.getItem('lantern-current-user');
+            if (!currentUser) {
+                alert('Unable to delete workspace: User not found.');
+                return;
+            }
+
+            // Remove workspace from user's workspace list
+            const workspacesKey = `${currentUser}-lantern-workspaces`;
+            const workspacesData = localStorage.getItem(workspacesKey);
+            
+            if (workspacesData) {
+                const workspaces = JSON.parse(workspacesData);
+                const updatedWorkspaces = workspaces.filter(ws => ws.id !== workspaceToDelete.id);
+                localStorage.setItem(workspacesKey, JSON.stringify(updatedWorkspaces));
+            }
+
+            // Delete all workspace-specific data
+            const prefix = `${workspaceToDelete.id}-lantern-`;
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(prefix)) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Clear current session
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-unlocked');
+
+            // Close modal
+            deleteModal.style.display = 'none';
+
+            // Redirect to workspace selection
+            alert(`Workspace "${workspaceToDelete.name}" has been permanently deleted.`);
+            window.location.href = '../login/V2/';
+        });
+
+        // Close modal on background click
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                deleteModal.style.display = 'none';
+                workspaceToDelete = null;
+            }
+        });
+
+        /* =========================================================
+           Delete Account
+           ========================================================= */
+
+        const deleteAccountModal = document.getElementById('delete-account-modal');
+        const deleteAccountConfirmInput = document.getElementById('delete-account-confirm');
+        const confirmDeleteAccountBtn = document.getElementById('confirm-delete-account-btn');
+        let accountToDelete = null;
+
+        // Prevent pasting in confirmation input
+        deleteAccountConfirmInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            alert('Pasting is not allowed. Please type your User ID manually.');
+        });
+
+        // Enable delete button only when user ID matches
+        deleteAccountConfirmInput.addEventListener('input', (e) => {
+            if (accountToDelete && e.target.value === accountToDelete.userId) {
+                confirmDeleteAccountBtn.disabled = false;
+            } else {
+                confirmDeleteAccountBtn.disabled = true;
+            }
+        });
+
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+            const currentUser = localStorage.getItem('lantern-current-user');
+            
+            if (!currentUser) {
+                alert('No account is currently logged in. Guest mode cannot be deleted.');
+                return;
+            }
+
+            // Get all workspaces for this account
+            const workspacesKey = `${currentUser}-lantern-workspaces`;
+            const workspacesData = localStorage.getItem(workspacesKey);
+            const workspaces = workspacesData ? JSON.parse(workspacesData) : [];
+
+            // First confirmation
+            if (!confirm(`Are you ABSOLUTELY SURE you want to delete your account "${currentUser}"?\n\nThis will delete:\n- Your account\n- ALL ${workspaces.length} workspace(s)\n- ALL settings and data\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            // Show modal for second confirmation
+            accountToDelete = {
+                userId: currentUser,
+                workspaces: workspaces
+            };
+            
+            document.getElementById('delete-account-id').textContent = currentUser;
+            
+            const workspacesList = document.getElementById('delete-account-workspaces');
+            workspacesList.innerHTML = '';
+            if (workspaces.length === 0) {
+                workspacesList.innerHTML = '<li style="color: var(--text-muted);">No workspaces</li>';
+            } else {
+                workspaces.forEach(ws => {
+                    const li = document.createElement('li');
+                    li.textContent = ws.name;
+                    li.style.marginBottom = '4px';
+                    workspacesList.appendChild(li);
+                });
+            }
+            
+            deleteAccountConfirmInput.value = '';
+            confirmDeleteAccountBtn.disabled = true;
+            deleteAccountModal.style.display = 'flex';
+        });
+
+        document.getElementById('cancel-delete-account-btn').addEventListener('click', () => {
+            deleteAccountModal.style.display = 'none';
+            accountToDelete = null;
+        });
+
+        document.getElementById('confirm-delete-account-btn').addEventListener('click', () => {
+            if (!accountToDelete) return;
+
+            const userId = accountToDelete.userId;
+
+            // Delete all workspaces data
+            accountToDelete.workspaces.forEach(workspace => {
+                const prefix = `${workspace.id}-lantern-`;
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith(prefix)) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            });
+
+            // Delete user's workspace list
+            localStorage.removeItem(`${userId}-lantern-workspaces`);
+
+            // Delete user account
+            localStorage.removeItem(`${userId}-lantern-account`);
+
+            // Clear current session
+            localStorage.removeItem('lantern-current-user');
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-unlocked');
+
+            // Close modal
+            deleteAccountModal.style.display = 'none';
+
+            // Redirect to home
+            alert(`Account "${userId}" and all associated data has been permanently deleted.`);
+            window.location.href = '../index.html';
+        });
+
+        // Close modal on background click
+        deleteAccountModal.addEventListener('click', (e) => {
+            if (e.target === deleteAccountModal) {
+                deleteAccountModal.style.display = 'none';
+                accountToDelete = null;
+            }
+        });
+
+        /* =========================================================
+           Workspace Management (Shared with index.html)
+           ========================================================= */
+
+        function getCurrentWorkspace() {
+            const unlocked = localStorage.getItem('lantern-unlocked') === 'true';
+            if (!unlocked) return null;
+
+            const currentWorkspace = localStorage.getItem('lantern-current-workspace');
+            return currentWorkspace ? JSON.parse(currentWorkspace) : null;
+        }
+
+        function getAllWorkspaces() {
+            const currentUser = localStorage.getItem('lantern-current-user');
+            if (!currentUser) return {};
+            
+            const workspaces = localStorage.getItem(`${currentUser}-lantern-workspaces`);
+            if (!workspaces) return {};
+            
+            // Convert array to object for compatibility
+            const workspaceArray = JSON.parse(workspaces);
+            const workspaceObj = {};
+            workspaceArray.forEach(ws => {
+                workspaceObj[ws.id] = {
+                    displayName: ws.name,
+                    lastOpened: ws.createdAt
+                };
+            });
+            return workspaceObj;
+        }
+
+        function switchWorkspace(workspaceId) {
+            const currentUser = localStorage.getItem('lantern-current-user');
+            if (!currentUser) {
+                window.location.href = '../login/V2/';
+                return;
+            }
+
+            // Get user's workspaces
+            const workspacesData = localStorage.getItem(`${currentUser}-lantern-workspaces`);
+            if (!workspacesData) return;
+
+            const workspaces = JSON.parse(workspacesData);
+            const targetWorkspace = workspaces.find(ws => ws.id === workspaceId);
+
+            if (targetWorkspace) {
+                // Format and load the workspace without logging out
+                const formattedWorkspace = {
+                    id: targetWorkspace.id,
+                    displayName: targetWorkspace.name,
+                    userId: currentUser,
+                    createdAt: targetWorkspace.createdAt
+                };
+                localStorage.setItem('lantern-current-workspace', JSON.stringify(formattedWorkspace));
+                
+                // Reload page to apply workspace-specific settings
+                window.location.reload();
+            }
+        }
+
+        function lockWorkspace() {
+            // Just clear the current workspace, keep user logged in
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-unlocked');
+            
+            // Redirect to login which will show workspace selection
+            window.location.href = '../login/V2/';
+        }
+
+        function fullLogout() {
+            // Clear everything for full logout
+            localStorage.removeItem('lantern-unlocked');
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-current-user');
+            window.location.href = '../index.html';
+        }
+
+        function renderWorkspaceButton() {
+            const container = document.getElementById('nav-auth-container');
+            const currentWorkspace = getCurrentWorkspace();
+
+            if (currentWorkspace) {
+                // Render workspace dropdown
+                const allWorkspaces = getAllWorkspaces();
+                const workspaceList = Object.keys(allWorkspaces)
+                    .map(id => ({
+                        id,
+                        ...allWorkspaces[id]
+                    }))
+                    .sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened));
+
+                container.innerHTML = `
+          <button class="workspace-button" id="workspace-btn">
+            <span>${currentWorkspace.displayName || currentWorkspace.id}</span>
+            <span style="opacity: 0.6;">▾</span>
+          </button>
+          <div class="workspace-dropdown" id="workspace-dropdown">
+            <div style="padding: 8px 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Current Workspace</div>
+            <div class="workspace-item active">
+              <span>${currentWorkspace.displayName || currentWorkspace.id}</span>
+              <span style="opacity: 0.6;">✓</span>
+            </div>
+            ${workspaceList.length > 1 ? `
+              <div class="divider"></div>
+              <div style="padding: 8px 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Switch To</div>
+              ${workspaceList
+                            .filter(w => w.id !== currentWorkspace.id)
+                            .map(w => `
+                  <div class="workspace-item" onclick="switchWorkspace('${w.id}')">
+                    <span>${w.displayName || w.id}</span>
+                  </div>
+                `).join('')}
+            ` : ''}
+            <div class="divider"></div>
+            <div class="workspace-action" onclick="window.location.href='../login/V2/'">
+              + Create Workspace
+            </div>
+            <div class="workspace-action" onclick="lockWorkspace()" style="color: var(--text-secondary);">
+              🔒 Lock Workspace
+            </div>
+          </div>
+        `;
+
+                // Add toggle functionality
+                const btn = document.getElementById('workspace-btn');
+                const dropdown = document.getElementById('workspace-dropdown');
+
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('visible');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && e.target !== btn) {
+                        dropdown.classList.remove('visible');
+                    }
+                });
+            } else {
+                // Render login button
+                container.innerHTML = `
+          <button class="login" onclick="window.location.href='../login/V2/'">
+            Workspace →
+          </button>
+        `;
+            }
+        }
+
+        /* =========================================================
+           Initialize
+           ========================================================= */
+
+        loadSettings();
+        renderWorkspaceButton();
+    </script>
+
+</body>
+
+</html>

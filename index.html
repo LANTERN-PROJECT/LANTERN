@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LANTERN</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="./common/commonStyles.css" />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./Assets/Favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./Assets/Favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./Assets/Favicon/favicon-16x16.png">
+    <link rel="manifest" href="./Assets/Favicon/site.webmanifest">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">LANTERN</div>
+
+        <div class="links">
+            <span>Docs</span>
+            <span id="notes-tab">Notes</span>
+            <span>Workspace</span>
+            <span id="settings-tab">Settings</span>
+        </div>
+
+        <!-- Dynamic Workspace/Login Button -->
+        <div id="nav-auth-container"></div>
+    </nav>
+
+    <!-- Orb -->
+    <div class="orb-container">
+        <div class="orb"></div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-left">
+            <h1>
+                Local-first tools<br />
+                for focused work
+            </h1>
+            <p>
+                LANTERN is an open-source productivity suite for documents,
+                notes, and collaboration — private by default and designed
+                to work without the cloud.
+            </p>
+        </div>
+
+        <div class="hero-right">
+            <div class="stat">
+                <strong>100%</strong>
+                <span>Local & offline-first</span>
+            </div>
+
+            <div class="stat">
+                <strong>Open</strong>
+                <span>MIT licensed</span>
+            </div>
+
+            <div class="stat">
+                <strong>24/7</strong>
+                <span>Your data, your control</span>
+
+                <div class="actions">
+                    <button class="btn">Get Started</button>
+                    <a class="btn" href="https://github.com/LANTERN-PROJECT/LANTERN" target="_blank">
+                        <svg xmlns="www.w3.org" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                            <path fill-rule="evenodd"
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                            </path>
+                        </svg>
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logic -->
+    <script>
+        /* =========================================================
+           Workspace Management
+           ========================================================= */
+
+        function getCurrentWorkspace() {
+            const unlocked = localStorage.getItem('lantern-unlocked') === 'true';
+            if (!unlocked) return null;
+
+            const currentWorkspace = localStorage.getItem('lantern-current-workspace');
+            return currentWorkspace ? JSON.parse(currentWorkspace) : null;
+        }
+
+        function getAllWorkspaces() {
+            const currentUser = localStorage.getItem('lantern-current-user');
+            if (!currentUser) return {};
+
+            const workspaces = localStorage.getItem(`${currentUser}-lantern-workspaces`);
+            if (!workspaces) return {};
+
+            // Convert array to object for compatibility
+            const workspaceArray = JSON.parse(workspaces);
+            const workspaceObj = {};
+            workspaceArray.forEach(ws => {
+                workspaceObj[ws.id] = {
+                    displayName: ws.name,
+                    lastOpened: ws.createdAt
+                };
+            });
+            return workspaceObj;
+        }
+
+        function switchWorkspace(workspaceId) {
+            const currentUser = localStorage.getItem('lantern-current-user');
+            if (!currentUser) {
+                window.location.href = './login/V2/';
+                return;
+            }
+
+            // Get user's workspaces
+            const workspacesData = localStorage.getItem(`${currentUser}-lantern-workspaces`);
+            if (!workspacesData) return;
+
+            const workspaces = JSON.parse(workspacesData);
+            const targetWorkspace = workspaces.find(ws => ws.id === workspaceId);
+
+            if (targetWorkspace) {
+                // Format and load the workspace without logging out
+                const formattedWorkspace = {
+                    id: targetWorkspace.id,
+                    displayName: targetWorkspace.name,
+                    userId: currentUser,
+                    createdAt: targetWorkspace.createdAt
+                };
+                localStorage.setItem('lantern-current-workspace', JSON.stringify(formattedWorkspace));
+
+                // Reload page to apply workspace-specific settings
+                window.location.reload();
+            }
+        }
+        function lockWorkspace() {
+            // Just clear the current workspace, keep user logged in
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-unlocked');
+
+            // Redirect to login which will show workspace selection
+            window.location.href = './login/V2/';
+        }
+
+        function fullLogout() {
+            // Clear everything for full logout
+            localStorage.removeItem('lantern-unlocked');
+            localStorage.removeItem('lantern-current-workspace');
+            localStorage.removeItem('lantern-current-user');
+            window.location.href = './';
+        }
+        function renderWorkspaceButton() {
+            const container = document.getElementById('nav-auth-container');
+            const currentWorkspace = getCurrentWorkspace();
+
+            if (currentWorkspace) {
+                // Render workspace dropdown
+                const allWorkspaces = getAllWorkspaces();
+                const workspaceList = Object.keys(allWorkspaces)
+                    .map(id => ({
+                        id,
+                        ...allWorkspaces[id]
+                    }))
+                    .sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened));
+
+                container.innerHTML = `
+                    <button class="workspace-button" id="workspace-btn">
+                        <span>${currentWorkspace.displayName || currentWorkspace.id}</span>
+                        <span style="opacity: 0.6;">▾</span>
+                    </button>
+                    <div class="workspace-dropdown" id="workspace-dropdown">
+                        <div style="padding: 8px 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Current Workspace</div>
+                        <div class="workspace-item active">
+                            <span>${currentWorkspace.displayName || currentWorkspace.id}</span>
+                            <span style="opacity: 0.6;">✓</span>
+                        </div>
+                        ${workspaceList.length > 1 ? `
+                            <div class="divider"></div>
+                            <div style="padding: 8px 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Switch To</div>
+                            ${workspaceList
+                            .filter(w => w.id !== currentWorkspace.id)
+                            .map(w => `
+                                    <div class="workspace-item" onclick="switchWorkspace('${w.id}')">
+                                        <span>${w.displayName || w.id}</span>
+                                    </div>
+                                `).join('')}
+                        ` : ''}
+                        <div class="divider"></div>
+                        <div class="workspace-action" onclick="window.location.href='./login/V2/'">
+                            + Create Workspace
+                        </div>
+                        <div class="workspace-action" onclick="lockWorkspace()" style="color: var(--text-secondary);">
+                            🔒 Lock Workspace
+                        </div>
+                    </div>
+                `;
+
+                // Add toggle functionality
+                const btn = document.getElementById('workspace-btn');
+                const dropdown = document.getElementById('workspace-dropdown');
+
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('visible');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && e.target !== btn) {
+                        dropdown.classList.remove('visible');
+                    }
+                });
+            } else {
+                // Render login button
+                container.innerHTML = `
+                    <button class="login" onclick="window.location.href='./login/V2/'">
+                        Workspace →
+                    </button>
+                `;
+            }
+        }
+
+        /* =========================================================
+           Tab Control
+           ========================================================= */
+
+        const notesTab = document.getElementById("notes-tab");
+        const settingsTab = document.getElementById("settings-tab");
+
+        notesTab.addEventListener("click", () => {
+            window.location = "./tools/notes/";
+        });
+
+        settingsTab.addEventListener("click", () => {
+            window.location = "/settings";
+        });
+
+        /* =========================================================
+           Theme Loading
+           ========================================================= */
+
+        function loadWorkspaceTheme() {
+            const themes = {
+                walnut: {
+                    "--bg-main": "#2E1F1B",
+                    "--bg-accent": "#5E4B43",
+                    "--bg-glass": "rgba(255,255,255,0.06)",
+                    "--bg-elevated": "rgba(94,75,67,0.28)",
+                    "--border-glass": "rgba(255,255,255,0.12)",
+                    "--text-primary": "#F3ECE9",
+                    "--text-secondary": "#C9B8AE",
+                    "--text-muted": "#9B8578",
+                    "--accent": "#E6D3C4"
+                },
+                ash: {
+                    "--bg-main": "#1C1E21",
+                    "--bg-accent": "#2A2D31",
+                    "--bg-glass": "rgba(255,255,255,0.05)",
+                    "--bg-elevated": "rgba(255,255,255,0.08)",
+                    "--border-glass": "rgba(255,255,255,0.12)",
+                    "--text-primary": "#E6E8EB",
+                    "--text-secondary": "#B0B6BF",
+                    "--text-muted": "#8A9099",
+                    "--accent": "#FFFFFF"
+                },
+                paper: {
+                    "--bg-main": "#F6F2EE",
+                    "--bg-accent": "#FFFFFF",
+                    "--bg-glass": "rgba(0,0,0,0.04)",
+                    "--bg-elevated": "rgba(0,0,0,0.06)",
+                    "--border-glass": "rgba(0,0,0,0.12)",
+                    "--text-primary": "#2E1F1B",
+                    "--text-secondary": "#5E4B43",
+                    "--text-muted": "#7A6A61",
+                    "--accent": "#2E1F1B"
+                }
+            };
+
+            const currentWorkspace = getCurrentWorkspace();
+            const defaultTheme = "paper";
+            let themeName;
+
+            if (currentWorkspace && currentWorkspace.id) {
+                // Load workspace-specific theme
+                const themeKey = `${currentWorkspace.id}-lantern-theme`;
+                themeName = localStorage.getItem(themeKey) || defaultTheme;
+            } else {
+                // No workspace, use guest theme
+                themeName = localStorage.getItem('guest-lantern-theme') || defaultTheme;
+            }
+
+            const theme = themes[themeName];
+            if (theme) {
+                Object.entries(theme).forEach(([key, value]) => {
+                    document.documentElement.style.setProperty(key, value);
+                });
+            }
+        }
+
+        /* =========================================================
+           Initialize
+           ========================================================= */
+
+        renderWorkspaceButton();
+        loadWorkspaceTheme();
+    </script>
+
+</body>
+
+</html>
